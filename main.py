@@ -1,23 +1,7 @@
+
 import pandas as pd
 import streamlit as st
-
-# Load the dataset
-data = pd.read_csv("amazon_data_latest.csv")
-
-# Define the scoring parameters and their weights
-scoring_parameters = {
-    'compliance': {
-        'label_compliance': 0.3,
-        'display_compliance': 0.3,
-    },
-    'correctness': {
-        'authenticity': 0.4,
-        'branding': 0.6,
-    },
-    'completeness': {
-        'attributes': 0.7,
-    },
-}
+from st_files_connection import FilesConnection  # Assuming you have this module for GCS connection
 
 # Define assessment functions
 def assess_compliance(row):
@@ -70,12 +54,31 @@ def compute_objective_store(row):
     
     return objective_store
 
-# Compute objective store
-data['objective_store'] = data.apply(compute_objective_store, axis=1)
-
 # Streamlit app
 def main():
     st.title('Amazon Product Dataset with Objective Store')
+    
+    # Load the dataset from Google Cloud Storage
+    conn = st.connection('gcs', type=FilesConnection)
+    data = conn.read("streamlit-bucket/amazon_data_latest.csv", input_format="csv", ttl=600)
+    
+    # Define the scoring parameters and their weights
+    scoring_parameters = {
+        'compliance': {
+            'label_compliance': 0.3,
+            'display_compliance': 0.3,
+        },
+        'correctness': {
+            'authenticity': 0.4,
+            'branding': 0.6,
+        },
+        'completeness': {
+            'attributes': 0.7,
+        },
+    }
+    
+    # Compute objective store for each row
+    data['objective_store'] = data.apply(compute_objective_store, axis=1)
     
     # Display the updated dataset
     st.write(data)
