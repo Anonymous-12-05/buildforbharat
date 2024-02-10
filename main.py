@@ -75,7 +75,7 @@ data['objective_store'] = data.apply(compute_objective_store, axis=1)
 
 # Streamlit app
 def main():
-    st.title('Amazon Product Dataset with Objective Store')
+    st.title('Catalogue Scoring')
     
     # Display the updated dataset
     st.write(data)
