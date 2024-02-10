@@ -1,4 +1,4 @@
 streamlit
 pandas
-gcsfs
-st-files-connection
+# gcsfs
+# st-files-connection
